@@ -1,0 +1,9 @@
+library(adventofcode21)
+x <- as.numeric(readLines("./inst/input01.txt"))
+
+p1 <- f01a(as.numeric(x))
+p2 <- f01b(x)
+
+stopifnot(p1 == aoc_solutions$day01a)
+stopifnot(p2 == aoc_solutions$day01b)
+

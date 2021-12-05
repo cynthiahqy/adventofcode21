@@ -175,6 +175,59 @@ f03a <- function(x) {
 #' @rdname day03
 #' @export
 f03b <- function(x) {
+  # input
+  df_in <- f03_input_helper(x)
+
+  # oxygen generator -- most common value
+  ## most_common in vec
+  most_common <- function(y) {
+    stopifnot(is.vector(y))
+    y <- as.numeric(y)
+    as.integer(sum(y) / length(y) >= 0.5)
+  }
+
+  ## get oxygen rating
+  df <- df_in
+  n_bits <- ncol(df)
+  rows <- nrow(df)
+  i <- 1
+  while (rows > 1) {
+    # filter by most common bit in column i
+    df <- df[df[[i]] == most_common(df[[i]]), 1:n_bits]
+    ## DEBUG: print(df)
+    # iterate counter & check stop condition
+    i <- i + 1
+    rows <- nrow(df)
+  }
+
+  oxy_bin <- paste0(df, collapse = "")
+  oxy <- strtoi(oxy_bin, base = 2)
+
+  # C02 rating -- least common value
+  ## return least common bit
+  least_common <- function(y) {
+    !most_common(y)
+  }
+
+  ## repeat with least_common
+  df <- df_in
+  n_bits <- ncol(df)
+  rows <- nrow(df)
+  i <- 1
+  while (rows > 1) {
+    # filter by most common bit in column i
+    df <- df[df[,i] == least_common(df[,i]), 1:n_bits]
+    ## DEBUG: print(df)
+    # iterate counter & check stop condition
+    i <- i + 1
+    rows <- nrow(df)
+  }
+
+  c02_bin <- paste0(df, collapse = "")
+  c02 <- strtoi(c02_bin, base = 2)
+
+  # final answer -- life support rating
+  oxy * c02
 
 }
 

@@ -83,9 +83,26 @@ f07a <- function(x) {
 #' @rdname day07
 #' @export
 f07b <- function(x) {
+  h <- f07_get_h(x)
 
+  # calculate target integers from mean
+  ## aim for all crabs to be equally "close"
+  targets <- list()
+  targets$f <- floor(mean(h))
+  targets$c <- ceiling(mean(h))
+
+  ## check both floor & ceiling integers
+  ### result depends on exact distance of crabs,
+  ### want to be closer to the furthest away crabs;
+  ### which might be above or below the mean
+  min(sapply(targets, f07_fuel_cost, h = h))
 }
 
+f07_fuel_cost <- function(h, target){
+  dist <- abs(h - target)
+  travel_cost <- dist * (dist+1) / 2
+  sum(travel_cost)
+}
 
 f07_get_h <- function(x) {
   as.integer(unlist(strsplit(x, ",")))

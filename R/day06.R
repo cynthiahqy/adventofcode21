@@ -105,39 +105,55 @@
 #' f06a(example_data_06())
 #' f06b()
 f06a <- function(init, days) {
-  # unique counters
-  # calculate n_fish on day x based on starting counter
-  # multiple by number of initial fish with counter
+  # pop table
+  #  with unique starting timers & count for each timer
+  df <- tibble::tibble(start_timer =  sort(unique(init)))
+  df$n_start <- sapply(lapply(df$start_timer, grepl, x = init), sum)
 
+  # calculate end states & pop after days based for each uniq starting timer
+  final_timers <- lapply(df$start_timer, f06_iter_timers, days)
+  df$n_end <- sapply(final_timers, length)
+
+  # final pop
+  sum(df$n_start * df$n_end)
+}
+
+#' @param init
+#' @param days
+#' @return population state `days` after initial state `init`
+#' @rdname day06
+#' @export
+f06_iter_timers <- function(init, days){
+  # set params
   mature <- 6
   newborn <- 8
   reprod <- 0
 
+  # iterate one fish
   iter_fish <- function(fish, .mature = mature){
     ifelse(fish-1 < 0, mature, fish-1)
   }
 
-  pop <- list(init)
+  # iterate whole pop
+  timers <- list(init)
   days <- days + 1 ## adjust for day 0
 
   for (day in 1:days){
     # iter time for existing fish
     tmrw <- day + 1
-    pop[[tmrw]] <- sapply(pop[[day]], iter_fish)
+    timers[[tmrw]] <- sapply(timers[[day]], iter_fish)
 
     # birth newborns
-    n_newborns <- sum(pop[[day]] == reprod)
-    pop[[tmrw]] <- c(pop[[tmrw]], rep.int(newborn, n_newborns))
+    n_newborns <- sum(timers[[day]] == reprod)
+    timers[[tmrw]] <- c(timers[[tmrw]], rep.int(newborn, n_newborns))
   }
 
-  length(pop[[days]])
-
+  return(timers[[days]])
 }
-
 
 #' @rdname day06
 #' @export
-f06b <- function(x) {
+f06b <- function(init, days) {
 
 }
 
